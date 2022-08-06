@@ -1,33 +1,34 @@
-package com.backend.spades.model;
+package com.backend.spades.dto;
 
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import org.springframework.data.jpa.domain.AbstractPersistable;
+import com.backend.spades.model.Category;
+import com.backend.spades.model.TypeScriptGeneration;
 
-@Entity
-@Table(name = "products")
-public class Product extends AbstractPersistable<Long> {
+@TypeScriptGeneration
+public class ProductDto {
+    private Long id;
     private String title;
-
     private Double price;
-
-    @ManyToOne
     private Category category;
-
     private String description;
-
     private String image;
 
-    public Product() {
-    }
-
-    public Product(String title, Double price, Category category, String description, String image) {
+    public ProductDto(String title, Double price, Category category, String description, String image) {
         this.title = title;
         this.price = price;
         this.category = category;
         this.description = description;
         this.image = image;
+    }
+
+    public ProductDto() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getTitle() {

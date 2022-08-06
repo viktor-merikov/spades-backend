@@ -42,10 +42,13 @@ public class User extends AbstractPersistable<Long> {
     @Cascade(CascadeType.DELETE)
     private Order order;
 
+    private UserRole role;
+
     public User() {
     }
 
-    public User(String username, String password, String email, String firstName, String lastName, String phone, Address address) {
+    public User(String username, String password, String email, String firstName, String lastName, String phone,
+            Address address, UserRole role) {
         this.username = username;
         this.password = password;
         this.email = email;
@@ -53,6 +56,7 @@ public class User extends AbstractPersistable<Long> {
         this.lastName = lastName;
         this.phone = phone;
         this.address = address;
+        this.role = role;
     }
 
     public Order getCart() {
@@ -117,5 +121,13 @@ public class User extends AbstractPersistable<Long> {
 
     public void setAddress(Address address) {
         this.address = address;
+    }
+
+    public UserRole getRole() {
+        return role;
+    }
+
+    public void setRole(UserRole role) {
+        this.role = role;
     }
 }

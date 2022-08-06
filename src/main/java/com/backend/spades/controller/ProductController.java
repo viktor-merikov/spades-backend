@@ -1,6 +1,8 @@
 package com.backend.spades.controller;
 
+import com.backend.spades.dto.ProductDto;
 import com.backend.spades.exception.NotFoundException;
+import com.backend.spades.mapper.ProductMapper;
 import com.backend.spades.model.Product;
 import com.backend.spades.repository.ProductRepository;
 import java.net.URI;
@@ -20,14 +22,20 @@ public class ProductController {
     @Autowired
     private ProductRepository productRepository;
 
-    @GetMapping
-    public List<Product> getAll() {
-        return productRepository.findAll();
-    }
+    private final ProductMapper productMapper = new ProductMapper();
 
+    @GetMapping
+    public List<ProductDto> getAll() {
+        return productMapper.listToDto(productRepository.findAll());
+    }
+        //TODO: create Category repository and get products throw category
     @GetMapping(params = "category")
-    public List<Product> getByCategory(@RequestParam String category) {
-        return productRepository.getProductByCategory(category);
+    public List<ProductDto> getByCategory(@RequestParam String category) {
+        List<Product> productByCategory = productRepository.getProductByCategory(category);
+        if (productByCategory == null || productByCategory.isEmpty()) {
+            throw new NotFoundException("This category is empty");
+        }
+        return productMapper.listToDto(productByCategory);
     }
 
     @GetMapping("/{id}")

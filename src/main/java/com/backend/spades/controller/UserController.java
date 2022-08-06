@@ -2,6 +2,7 @@ package com.backend.spades.controller;
 
 import com.backend.spades.dto.UserDto;
 import com.backend.spades.exception.NotFoundException;
+import com.backend.spades.mapper.UserMapper;
 import com.backend.spades.model.User;
 import com.backend.spades.repository.UserRepository;
 import java.net.URI;
@@ -21,32 +22,25 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
+    private final UserMapper userMapper = new UserMapper();
+
     @GetMapping
     public List<UserDto> getAll() {
-        return userRepository.findAll().stream()
-                .map(user -> new UserDto(
-                        user.getId(),
-                        user.getUsername(),
-                        user.getEmail(),
-                        user.getFirstName(),
-                        user.getLastName(),
-                        user.getPhone(),
-                        user.getAddress()
-                )).toList();
+        return userMapper.listToDto(userRepository.findAll());
     }
 
     @GetMapping("/{id}")
-    public User get(@PathVariable long id) {
+    public UserDto get(@PathVariable long id) {
         Optional<User> user = userRepository.findById(id);
         if (user.isEmpty()) {
             throw new NotFoundException("User with id: " + id + "not found");
         }
-        return user.get();
+        return userMapper.toDto(user.get());
     }
 
     @PostMapping
-    public ResponseEntity<Object> create(@Valid @RequestBody User user) {
-        User userSaved = userRepository.save(user);
+    public ResponseEntity<Object> create(@Valid @RequestBody UserDto userDto) {
+        User userSaved = userRepository.save(userMapper.toEntity(userDto));
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
@@ -56,15 +50,15 @@ public class UserController {
     }
 
     @PutMapping
-    public User update(@Valid @RequestBody User user) {
-        if (user.getId() == null) {
+    public User update(@Valid @RequestBody UserDto userDto) {
+        if (userDto.getId() == null) {
             throw new NotFoundException("User ID is null");
         }
-        Optional<User> optionalUser = userRepository.findById(user.getId());
+        Optional<User> optionalUser = userRepository.findById(userDto.getId());
         if (optionalUser.isEmpty()) {
-            throw new NotFoundException("User with id: " + user.getId() + "not found");
+            throw new NotFoundException("User with id: " + userDto.getId() + "not found");
         }
-        return userRepository.save(user);
+        return userRepository.save(userMapper.toEntity(userDto));
     }
 
     @DeleteMapping("/{id}")
